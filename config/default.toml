@@ -1,0 +1,14 @@
+[application]
+host = "localhost"
+port = 8080
+jwt_secret = "your_j"
+jwt_expiration_hours = 24
+
+[database]
+host = "localhost"
+port = 5432
+username = "postgres"
+password = "p@ssw0rd"
+database_name = "bislink"
+schema = "dev"
+pool_size = 50
