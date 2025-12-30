@@ -1,0 +1,30 @@
+[package]
+name = "rust-tutorial"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.100"
+argon2 = {version = "0.5.3"}
+async-trait = "0.1.89"
+axum = {version = "0.8.8", features = ["macros"]}
+chrono = {version = "0.4.26", features = ["serde"]}
+dotenvy = "0.15.7"
+jsonwebtoken = {version = "10.2.0", features = ["rust_crypto"]}
+serde = {version = "1.0.228", features = ["derive"]}
+serde_json = {version = "1.0.148"}
+sqlx = {version = "0.8.6", features = ["runtime-tokio", "postgres", "uuid", "chrono", "migrate"]}
+thiserror = "2.0.17"
+tokio = {version = "1.48.0", features = ["full"]}
+tower = {version = "0.5.2", features = ["util", "timeout"]}
+tower-http = {version = "0.6.8", features = ["trace", "cors", "request-id", "util", "compression-gzip"]}
+tracing = "0.1.44"
+tracing-subscriber = {version = "0.3.22", features = ["env-filter", "json"]}
+uuid = {version = "1.19.0", features = ["v4", "serde"]}
+validator = {version = "0.20.0", features = ["derive"]}
+
+[dev-dependencies]
+mockall = "0.14.0"
+fake = {version = "4.4.0", features = ["derive", "uuid", "chrono"]}
+
+
