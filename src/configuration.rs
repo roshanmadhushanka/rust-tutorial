@@ -1,6 +1,6 @@
 use config::{Config, ConfigError, File};
+use secrecy::{ExposeSecret, SecretString};
 use serde::Deserialize;
-use secrecy::{SecretString, ExposeSecret};
 
 #[derive(Deserialize, Clone)]
 pub struct DatabaseConfiguration {
@@ -11,17 +11,23 @@ pub struct DatabaseConfiguration {
     pub database_name: String,
     pub schema: String,
     pub pool_size: u32,
+    pub max_connections: u32,
+    pub min_connections: u32,
+    pub acquire_timeout_seconds: u64,
+    pub idle_timeout_seconds: u64,
+    pub max_lifetime_seconds: u64,
 }
 
 impl DatabaseConfiguration {
     pub fn connection_url(&self) -> String {
         format!(
-            "postgres://{}:{}@{}:{}/{}",
+            "postgres://{}:{}@{}:{}/{}?options=-c search_path={}",
             self.username,
             self.password.expose_secret(),
             self.host,
             self.port,
-            self.database_name
+            self.database_name,
+            self.schema
         )
     }
 }
@@ -49,5 +55,9 @@ impl Configuration {
             .add_source(config::Environment::with_prefix("APP").separator("__"))
             .build()?;
         settings.try_deserialize()
+    }
+
+    pub fn server_address(&self) -> String {
+        format!("{}:{}", self.application.host, self.application.port)
     }
 }
