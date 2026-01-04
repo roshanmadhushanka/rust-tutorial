@@ -1,10 +1,13 @@
-use axum::{http::StatusCode, response::{IntoResponse, Response}, Json};
+use axum::{
+    Json,
+    http::StatusCode,
+    response::{IntoResponse, Response},
+};
 use serde_json::json;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum AppError {
-
     #[error("Authentication error: {0}")]
     Auth(String),
 
@@ -43,13 +46,25 @@ impl IntoResponse for AppError {
             AppError::Conflict(msg) => (StatusCode::CONFLICT, "CONFLICT", msg.clone()),
             AppError::Database(err) => {
                 tracing::error!("Database error: {:?}", err);
-                (StatusCode::INTERNAL_SERVER_ERROR, "DATABASE_ERROR", "A database error occurred".to_string())
-            },
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "DATABASE_ERROR",
+                    "A database error occurred".to_string(),
+                )
+            }
             AppError::Internal(msg) => {
                 tracing::error!("Internal server error: {}", msg);
-                (StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", "An internal server error occurred".to_string())
-            },
-            AppError::PasswordHash => (StatusCode::INTERNAL_SERVER_ERROR, "PASSWORD_HASH_ERROR", "Password hashing failed".to_string()),
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "INTERNAL_ERROR",
+                    "An internal server error occurred".to_string(),
+                )
+            }
+            AppError::PasswordHash => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "PASSWORD_HASH_ERROR",
+                "Password hashing failed".to_string(),
+            ),
             AppError::Jwt(err) => (StatusCode::UNAUTHORIZED, "JWT_ERROR", err.to_string()),
         };
 

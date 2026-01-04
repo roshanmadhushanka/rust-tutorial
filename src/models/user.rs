@@ -13,6 +13,26 @@ pub enum UserRole {
     Moderator,
 }
 
+impl From<String> for UserRole {
+    fn from(s: String) -> Self {
+        match s.to_lowercase().as_str() {
+            "admin" => UserRole::Admin,
+            "moderator" => UserRole::Moderator,
+            _ => UserRole::User,
+        }
+    }
+}
+
+impl From<UserRole> for String {
+    fn from(role: UserRole) -> Self {
+        match role {
+            UserRole::Admin => "admin".to_string(),
+            UserRole::Moderator => "moderator".to_string(),
+            UserRole::User => "user".to_string(),
+        }
+    }
+}
+
 impl Default for UserRole {
     fn default() -> Self {
         UserRole::User
@@ -34,7 +54,6 @@ pub struct User {
 }
 
 impl User {
-
     pub fn full_name(&self) -> String {
         format!("{} {}", self.first_name, self.last_name)
     }
@@ -75,7 +94,6 @@ impl From<User> for UserResponse {
 
 #[derive(Debug, Deserialize, Validate)]
 pub struct CreateUserRequest {
-
     #[validate(email(message = "Invalid email format"))]
     pub email: String,
 
@@ -91,19 +109,17 @@ pub struct CreateUserRequest {
 
 #[derive(Debug, Deserialize, Validate)]
 pub struct UpdateUserRequest {
-
     #[validate(length(min = 1, max = 100))]
     pub first_name: Option<String>,
 
     #[validate(length(min = 1, max = 100))]
     pub last_name: Option<String>,
 
-    pub is_active: Option<bool>
+    pub is_active: Option<bool>,
 }
 
 #[derive(Debug, Deserialize, Validate)]
 pub struct LoginRequest {
-
     #[validate(email)]
     pub email: String,
 
@@ -113,7 +129,6 @@ pub struct LoginRequest {
 
 #[derive(Debug, Serialize)]
 pub struct AuthResponse {
-
     pub access_token: String,
     pub token_type: String,
     pub expires_in: i64,
@@ -127,7 +142,6 @@ pub struct PaginationParams {
 }
 
 impl PaginationParams {
-
     pub fn offset(&self) -> u32 {
         let page = self.page.unwrap_or(1).max(1);
         let per_page = self.per_page();

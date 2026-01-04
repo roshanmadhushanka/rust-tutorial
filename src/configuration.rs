@@ -37,7 +37,7 @@ pub struct ApplicationConfiguration {
     pub host: String,
     pub port: u16,
     pub jwt_secret: SecretString,
-    pub jwt_expiration_hours: u16,
+    pub jwt_expiration_hours: i64,
 }
 
 #[derive(Deserialize, Clone)]

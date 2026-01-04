@@ -11,12 +11,12 @@ use mockall::automock;
 #[cfg_attr(test, automock)]
 #[async_trait]
 pub trait UserRepository: Send + Sync {
-    async fn create(&self,  req: &CreateUserRequest, password_hash: &str) -> AppResult<User>;
+    async fn create(&self, req: &CreateUserRequest, password_hash: &str) -> AppResult<User>;
     async fn find_by_id(&self, id: Uuid) -> AppResult<Option<User>>;
     async fn find_by_email(&self, email: &str) -> AppResult<Option<User>>;
     async fn find_all(&self, offset: u32, limit: u32) -> AppResult<Vec<User>>;
     async fn count(&self) -> AppResult<i64>;
-    async fn update(&self, id: Uuid, req:  &UpdateUserRequest) -> AppResult<User>;
+    async fn update(&self, id: Uuid, req: &UpdateUserRequest) -> AppResult<User>;
     async fn delete(&self, id: Uuid) -> AppResult<bool>;
     async fn exist_by_email(&self, email: &str) -> AppResult<bool>;
 }
@@ -81,10 +81,10 @@ impl UserRepository for PgUserRepository {
                 WWHERE email = $1
                 "#,
         )
-            .bind(email.to_lowercase())
-            .fetch_optional(&self.pool)
-            .await
-            .map_err(AppError::Database)
+        .bind(email.to_lowercase())
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(AppError::Database)
     }
 
     async fn find_all(&self, offset: u32, limit: u32) -> AppResult<Vec<User>> {
@@ -113,8 +113,11 @@ impl UserRepository for PgUserRepository {
         Ok(result.0)
     }
 
-    async fn update(&self, id: Uuid, req:  &UpdateUserRequest) -> AppResult<User> {
-        let current = self.find_by_id(id).await?.ok_or_else(|| AppError::NotFound(format!("User with id '{}' not found", id)))?;
+    async fn update(&self, id: Uuid, req: &UpdateUserRequest) -> AppResult<User> {
+        let current = self
+            .find_by_id(id)
+            .await?
+            .ok_or_else(|| AppError::NotFound(format!("User with id '{}' not found", id)))?;
 
         let first_name = req.first_name.as_ref().unwrap_or(&current.first_name);
         let last_name = req.last_name.as_ref().unwrap_or(&current.last_name);
@@ -158,4 +161,3 @@ impl UserRepository for PgUserRepository {
         Ok(result.0)
     }
 }
-
