@@ -1,6 +1,6 @@
 use crate::configuration::Configuration;
 use crate::error::{AppError, AppResult};
-use crate::models::{AuthResponse, CreateUserRequest, PaginatedMeta, PaginatedResponse, PaginationParams, User, UserResponse, UserRole};
+use crate::models::{AuthResponse, CreateUserRequest, PaginatedMeta, PaginatedResponse, PaginationParams, UpdateUserRequest, User, UserResponse, UserRole};
 use crate::repositories::user_repository::UserRepository;
 use argon2::{
     Argon2,
@@ -88,6 +88,28 @@ impl UserService {
                 total_pages,
             },
         })
+    }
+
+    pub async fn update_user(&self, id: Uuid,  req: UpdateUserRequest) -> AppResult<UserResponse> {
+        let user = self.repository.update(id, &req).await?;
+        Ok(UserResponse::from(user))
+    }
+
+    pub async fn delete_user(&self, id: Uuid) -> AppResult<()> {
+        let deleted = self.repository.delete(id).await?;
+        if !deleted {
+            return Err(AppError::NotFound(format!("User with id '{}' not found", id)));
+        }
+        Ok(())
+    }
+
+    pub fn verify_token(&self, token: &str) -> AppResult<Claims> {
+        let token_data = decode::<Claims>(
+            token,
+            &DecodingKey::from_secret(self.configuration.application.jwt_secret.expose_secret().as_bytes()),
+            &Validation::default(),
+        )?;
+        Ok(token_data.claims)
     }
 
     fn hash_password(&self, password: &str) -> AppResult<String> {
